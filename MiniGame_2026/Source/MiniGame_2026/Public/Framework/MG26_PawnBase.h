@@ -77,10 +77,10 @@ private:
 
 protected:
 	/** Được gọi cho đầu vào di chuyển */
-	void Move(const FInputActionValue& Value);
+	virtual void Move(const FInputActionValue& Value);
 
 	/** Được gọi cho đầu vào nhìn */
-	void Look(const FInputActionValue& Value);
+	virtual void Look(const FInputActionValue& Value);
 
 	/** Được gọi cho đầu vào nhảy */
 	void Jump(const FInputActionValue& Value);
