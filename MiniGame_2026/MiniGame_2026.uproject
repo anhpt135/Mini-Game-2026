@@ -5,7 +5,7 @@
 	"Description": "",
 	"Modules": [
 		{
-			"Name": "UE_Project",
+			"Name": "MiniGame_2026",
 			"Type": "Runtime",
 			"LoadingPhase": "Default"
 		}

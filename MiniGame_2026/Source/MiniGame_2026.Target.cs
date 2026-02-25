@@ -3,13 +3,13 @@
 using UnrealBuildTool;
 using System.Collections.Generic;
 
-public class UE_ProjectTarget : TargetRules
+public class MiniGame_2026Target : TargetRules
 {
-	public UE_ProjectTarget(TargetInfo Target) : base(Target)
+	public MiniGame_2026Target(TargetInfo Target) : base(Target)
 	{
 		Type = TargetType.Game;
 		DefaultBuildSettings = BuildSettingsVersion.V6;
 		IncludeOrderVersion = EngineIncludeOrderVersion.Unreal5_7;
-		ExtraModuleNames.Add("UE_Project");
+		ExtraModuleNames.Add("MiniGame_2026");
 	}
 }
