@@ -1,7 +1,7 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+﻿// Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "Interation/MG26_TriggerButton.h"
+#include "Interaction/MG26_TriggerButton.h"
 
 // Sets default values
 AMG26_TriggerButton::AMG26_TriggerButton()
@@ -24,4 +24,3 @@ void AMG26_TriggerButton::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 
 }
-
