@@ -60,4 +60,10 @@ private:
 
 	UPROPERTY(EditAnywhere, Category = "Helicopter Config")
 	float MaxAltitude = 2000.0f; // Độ cao tối đa (tính từ Z=0 hoặc vị trí bắt đầu tùy logic)
+
+	UPROPERTY(EditAnywhere, Category = "Helicopter Config")
+	float AirFriction = 3.0f; // Ma sát không khí (khi bay) - Tăng giá trị này để dừng nhanh hơn
+
+	UPROPERTY(EditAnywhere, Category = "Helicopter Config")
+	float GroundFriction = 5.0f; // Ma sát mặt đất (khi hạ cánh)
 };

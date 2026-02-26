@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+// Điền thông báo bản quyền của bạn vào trang Mô tả của Cài đặt Dự án.
 
 
 #include "Character/MG26_Pawn_02.h"
@@ -43,6 +43,17 @@ AMG26_Pawn_02::AMG26_Pawn_02()
 	CurrentForwardSpeed = 0.0f;
 	CurrentVerticalSpeed = 0.0f;
 	CurrentYawSpeed = 0.0f;
+	
+	// Khởi tạo các giá trị cấu hình mặc định (nếu chưa được set trong Blueprint)
+	Acceleration = 1000.0f;
+	MaxForwardSpeed = 1500.0f;
+	TurnSpeed = 100.0f;
+	LiftAcceleration = 1500.0f;
+	GravityForce = 980.0f;
+	MaxVerticalSpeed = 1000.0f;
+	MaxAltitude = 2000.0f;
+	AirFriction = 3.0f;
+	GroundFriction = 5.0f;
 }
 
 void AMG26_Pawn_02::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -145,35 +156,37 @@ void AMG26_Pawn_02::Tick(float DeltaTime)
 			
 			// GIẢM TỐC ĐỘ DI CHUYỂN KHI TIẾP ĐẤT (Ma sát mặt đất)
 			// Giúp xe dừng lại nhanh hơn và giảm độ nghiêng (Pitch)
-			CurrentForwardSpeed = FMath::FInterpTo(CurrentForwardSpeed, 0.0f, DeltaTime, 5.0f);
+			CurrentForwardSpeed = FMath::FInterpTo(CurrentForwardSpeed, 0.0f, DeltaTime, GroundFriction);
 		}
 	}
 
 	// 2. Xử lý Bay Tới / Lùi (Forward Movement)
 	// Tăng/giảm tốc độ dựa trên input
-	if (TargetForwardInput != 0.0f)
+	// CHỈ CHO PHÉP DI CHUYỂN KHI ĐÃ RỜI MẶT ĐẤT (!bIsLanded)
+	if (!bIsLanded && TargetForwardInput != 0.0f)
 	{
 		CurrentForwardSpeed += TargetForwardInput * Acceleration * DeltaTime;
 	}
 	else
 	{
-		// Giảm tốc độ khi không nhấn phím (ma sát không khí)
+		// Giảm tốc độ khi không nhấn phím (ma sát không khí) HOẶC khi đang ở dưới đất
 		if (FMath::Abs(CurrentForwardSpeed) > 10.0f)
 		{
-			CurrentForwardSpeed -= FMath::Sign(CurrentForwardSpeed) * (Acceleration * 0.5f) * DeltaTime;
+			// Tăng ma sát để dừng nhanh hơn
+			// Sử dụng biến cấu hình AirFriction và GroundFriction
+			float Friction = bIsLanded ? GroundFriction : AirFriction;
+			CurrentForwardSpeed -= FMath::Sign(CurrentForwardSpeed) * (Acceleration * Friction) * DeltaTime;
 		}
 		else
 		{
-			// Nếu không phải đang ở dưới đất (đã xử lý ở trên) thì mới set về 0 ở đây
-			if (!bIsLanded) 
-			{
-				CurrentForwardSpeed = 0.0f;
-			}
+			// Nếu tốc độ rất nhỏ, set về 0
+			CurrentForwardSpeed = 0.0f;
 		}
 	}
 	CurrentForwardSpeed = FMath::Clamp(CurrentForwardSpeed, -MaxForwardSpeed, MaxForwardSpeed);
 
 	// 3. Xử lý Xoay (Yaw Rotation)
+	// Vẫn cho phép xoay khi ở dưới đất (tùy chọn, nếu muốn chặn thì thêm !bIsLanded)
 	float TurnAmount = TargetTurnInput * TurnSpeed * DeltaTime;
 	AddActorLocalRotation(FRotator(0.0f, TurnAmount, 0.0f));
 
