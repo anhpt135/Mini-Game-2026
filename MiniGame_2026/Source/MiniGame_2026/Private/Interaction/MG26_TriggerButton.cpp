@@ -5,7 +5,6 @@
 #include "Components/BoxComponent.h"
 #include "Components/StaticMeshComponent.h"
 #include "GameFramework/Pawn.h"
-#include "Framework/MG26_PlayerControllerBase.h"
 
 // Thiết lập các giá trị mặc định
 AMG26_TriggerButton::AMG26_TriggerButton()
@@ -47,15 +46,11 @@ void AMG26_TriggerButton::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AA
 		APawn* OverlappingPawn = Cast<APawn>(OtherActor);
 		if (OverlappingPawn)
 		{
-			// Lấy bộ điều khiển người chơi (player controller)
-			AMG26_PlayerControllerBase* PlayerController = Cast<AMG26_PlayerControllerBase>(OverlappingPawn->GetController());
-			if (PlayerController && PlayerController->bCanTriggerPossess)
+			// Chỉ cần phát tín hiệu (Broadcast)
+			// Ai quan tâm (Level Blueprint, Controller, UI...) sẽ tự xử lý
+			if (OnTriggerActivated.IsBound())
 			{
-				// Chuyển sang pawn xe
-				if (TargetPawnToPossess)
-				{
-					PlayerController->SwitchToVehicle(TargetPawnToPossess, this);
-				}
+				OnTriggerActivated.Broadcast(TargetPawnToPossess, this);
 			}
 		}
 	}

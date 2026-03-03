@@ -39,10 +39,20 @@ void AMG26_PlayerControllerBase::SetupInputComponent()
 
 void AMG26_PlayerControllerBase::SwitchToVehicle(APawn* NewVehiclePawn, AMG26_TriggerButton* Trigger)
 {
+	// Kiểm tra cờ cooldown trước khi thực hiện bất kỳ logic nào
+	if (!bCanTriggerPossess)
+	{
+		return;
+	}
+
 	if (NewVehiclePawn)
 	{
-		// Lưu pawn nhân vật hiện tại
-		CharacterPawn = GetPawn();
+		// FIX: Chỉ lưu CharacterPawn nếu hiện tại chưa lái xe (VehiclePawn là null)
+		// Điều này ngăn việc CharacterPawn bị ghi đè thành chiếc xe khi hàm này được gọi lại.
+		if (VehiclePawn == nullptr)
+		{
+			CharacterPawn = GetPawn();
+		}
 
 		// Chiếm quyền điều khiển pawn xe
 		Possess(NewVehiclePawn);
@@ -62,7 +72,7 @@ void AMG26_PlayerControllerBase::SwitchToCharacter()
 		// Chiếm quyền điều khiển pawn nhân vật
 		Possess(CharacterPawn);
 
-		// Xóa tham chiếu pawn xe
+		// Xóa tham chiếu pawn xe để đánh dấu là đã rời xe
 		VehiclePawn = nullptr;
 
 		// Tạm thời vô hiệu hóa việc chiếm quyền điều khiển trigger

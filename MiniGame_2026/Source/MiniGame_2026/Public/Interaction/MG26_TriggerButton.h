@@ -8,6 +8,9 @@
 
 class UBoxComponent;
 
+// Khai báo sự kiện: Truyền ra Pawn xe mục tiêu và chính cái nút này
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnTriggerActivated, APawn*, VehicleToPossess, AMG26_TriggerButton*, TriggerSource);
+
 UCLASS()
 class MINIGAME_2026_API AMG26_TriggerButton : public AActor
 {
@@ -16,6 +19,10 @@ class MINIGAME_2026_API AMG26_TriggerButton : public AActor
 public:	
 	// Thiết lập các giá trị mặc định cho các thuộc tính của actor này
 	AMG26_TriggerButton();
+
+	// Sự kiện để Blueprint có thể "kéo dây" vào
+	UPROPERTY(BlueprintAssignable, Category = "Events")
+	FOnTriggerActivated OnTriggerActivated;
 
 protected:
 	// Được gọi khi trò chơi bắt đầu hoặc khi được sinh ra
