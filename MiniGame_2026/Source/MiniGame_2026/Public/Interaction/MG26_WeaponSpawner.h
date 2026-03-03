@@ -6,6 +6,8 @@
 #include "MG26_TriggerButton.h"
 #include "MG26_WeaponSpawner.generated.h"
 
+class UNiagaraSystem;
+
 UCLASS()
 class MINIGAME_2026_API AMG26_WeaponSpawner : public AMG26_TriggerButton
 {
@@ -14,6 +16,9 @@ class MINIGAME_2026_API AMG26_WeaponSpawner : public AMG26_TriggerButton
 public:
 	// Sets default values for this actor's properties
 	AMG26_WeaponSpawner();
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Effects")
+	TObjectPtr<UNiagaraSystem> HieuUngKhiLumVuKhi;
 
 protected:
 	// Called when the game starts or when spawned
