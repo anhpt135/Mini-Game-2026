@@ -28,7 +28,8 @@ void AMG26_PlayerControllerBase::SetupInputComponent()
 {
 	Super::SetupInputComponent();
 
-	if (UEnhancedInputComponent* EnhancedInputComponent = CastChecked<UEnhancedInputComponent>(InputComponent))
+	// Sử dụng Cast an toàn thay vì CastChecked để tránh crash tiềm ẩn
+	if (UEnhancedInputComponent* EnhancedInputComponent = Cast<UEnhancedInputComponent>(InputComponent))
 	{
 		if (SwitchToCharacterAction)
 		{
@@ -59,9 +60,8 @@ void AMG26_PlayerControllerBase::SwitchToVehicle(APawn* NewVehiclePawn, AMG26_Tr
 
 		// Lưu pawn xe
 		VehiclePawn = NewVehiclePawn;
-
-		// Lưu nút trigger
-		LastActiveTrigger = Trigger;
+		
+		// Đã loại bỏ việc gán LastActiveTrigger vì biến này không được sử dụng
 	}
 }
 

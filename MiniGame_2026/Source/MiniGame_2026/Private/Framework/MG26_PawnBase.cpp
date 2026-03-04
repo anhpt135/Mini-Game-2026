@@ -98,7 +98,8 @@ void AMG26_PawnBase::Tick(float DeltaTime)
 	if (VerticalVelocity != 0.0f)
 	{
 		FVector DeltaLocation = FVector(0.0f, 0.0f, VerticalVelocity * DeltaTime);
-		AddActorLocalOffset(DeltaLocation, true);
+		// SỬA LỖI: Sử dụng AddActorWorldOffset thay vì AddActorLocalOffset để trọng lực luôn hướng xuống theo trục Z thế giới
+		AddActorWorldOffset(DeltaLocation, true);
 	}
 }
 
