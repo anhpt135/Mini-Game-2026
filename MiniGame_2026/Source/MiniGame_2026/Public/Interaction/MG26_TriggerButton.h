@@ -8,8 +8,8 @@
 
 class UBoxComponent;
 
-// Khai báo sự kiện: Truyền ra Pawn xe mục tiêu và chính cái nút này
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnTriggerActivated, APawn*, VehicleToPossess, AMG26_TriggerButton*, TriggerSource);
+// Khai báo sự kiện: Truyền ra Pawn xe mục tiêu
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnTriggerActivated, APawn*, VehicleToPossess);
 
 UCLASS()
 class MINIGAME_2026_API AMG26_TriggerButton : public AActor

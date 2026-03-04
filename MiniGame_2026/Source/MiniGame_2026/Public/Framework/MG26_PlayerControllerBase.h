@@ -24,7 +24,7 @@ public:
 
 	// Hàm chuyển quyền điều khiển sang xe
 	UFUNCTION(BlueprintCallable, Category = "Vehicle")
-	void SwitchToVehicle(APawn* NewVehiclePawn, AMG26_TriggerButton* Trigger);
+	void SwitchToVehicle(APawn* NewVehiclePawn);
 
 	// Hàm chuyển quyền điều khiển lại cho nhân vật
 	UFUNCTION(BlueprintCallable, Category = "Character")

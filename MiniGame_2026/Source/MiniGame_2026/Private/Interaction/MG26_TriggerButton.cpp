@@ -50,7 +50,7 @@ void AMG26_TriggerButton::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AA
 			// Ai quan tâm (Level Blueprint, Controller, UI...) sẽ tự xử lý
 			if (OnTriggerActivated.IsBound())
 			{
-				OnTriggerActivated.Broadcast(TargetPawnToPossess, this);
+				OnTriggerActivated.Broadcast(TargetPawnToPossess);
 			}
 		}
 	}

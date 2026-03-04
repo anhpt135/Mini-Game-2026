@@ -5,7 +5,6 @@
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
 #include "GameFramework/Pawn.h"
-#include "Interaction/MG26_TriggerButton.h"
 #include "TimerManager.h"
 
 void AMG26_PlayerControllerBase::BeginPlay()
@@ -28,7 +27,8 @@ void AMG26_PlayerControllerBase::SetupInputComponent()
 {
 	Super::SetupInputComponent();
 
-	if (UEnhancedInputComponent* EnhancedInputComponent = CastChecked<UEnhancedInputComponent>(InputComponent))
+	// Sử dụng Cast an toàn thay vì CastChecked để tránh crash tiềm ẩn
+	if (UEnhancedInputComponent* EnhancedInputComponent = Cast<UEnhancedInputComponent>(InputComponent))
 	{
 		if (SwitchToCharacterAction)
 		{
@@ -37,32 +37,32 @@ void AMG26_PlayerControllerBase::SetupInputComponent()
 	}
 }
 
-void AMG26_PlayerControllerBase::SwitchToVehicle(APawn* NewVehiclePawn, AMG26_TriggerButton* Trigger)
+void AMG26_PlayerControllerBase::SwitchToVehicle(APawn* NewVehiclePawn)
 {
-	// Kiểm tra cờ cooldown trước khi thực hiện bất kỳ logic nào
+	// Kiểm tra thời gian hồi chiêu (Cooldown)
 	if (!bCanTriggerPossess)
 	{
 		return;
 	}
 
-	if (NewVehiclePawn)
+	// Kiểm tra xe hợp lệ
+	if (!NewVehiclePawn)
 	{
-		// FIX: Chỉ lưu CharacterPawn nếu hiện tại chưa lái xe (VehiclePawn là null)
-		// Điều này ngăn việc CharacterPawn bị ghi đè thành chiếc xe khi hàm này được gọi lại.
-		if (VehiclePawn == nullptr)
-		{
-			CharacterPawn = GetPawn();
-		}
-
-		// Chiếm quyền điều khiển pawn xe
-		Possess(NewVehiclePawn);
-
-		// Lưu pawn xe
-		VehiclePawn = NewVehiclePawn;
-
-		// Lưu nút trigger
-		LastActiveTrigger = Trigger;
+		return;
 	}
+
+	// Chỉ lưu Pawn nhân vật nếu chưa lên xe
+	// Tránh ghi đè CharacterPawn bằng VehiclePawn
+	if (VehiclePawn == nullptr)
+	{
+		CharacterPawn = GetPawn();
+	}
+
+	// Chuyển quyền điều khiển sang xe
+	Possess(NewVehiclePawn);
+
+	// Cập nhật tham chiếu xe hiện tại
+	VehiclePawn = NewVehiclePawn;
 }
 
 void AMG26_PlayerControllerBase::SwitchToCharacter()
