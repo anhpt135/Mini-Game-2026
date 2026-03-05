@@ -16,10 +16,6 @@ AMG26_TriggerButton::AMG26_TriggerButton()
 	TriggerBox = CreateDefaultSubobject<UBoxComponent>(TEXT("TriggerBox"));
 	RootComponent = TriggerBox;
 
-	// Tạo thành phần lưới (mesh component)
-	MeshComp = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("MeshComp"));
-	MeshComp->SetupAttachment(RootComponent);
-
 	// Liên kết sự kiện chồng lấp (overlap event)
 	TriggerBox->OnComponentBeginOverlap.AddDynamic(this, &AMG26_TriggerButton::OnOverlapBegin);
 }

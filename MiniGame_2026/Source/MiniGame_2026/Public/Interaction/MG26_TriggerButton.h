@@ -31,9 +31,6 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
 	UBoxComponent* TriggerBox;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
-	UStaticMeshComponent* MeshComp;
-
 	// Pawn để chiếm quyền điều khiển khi được kích hoạt
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Interaction")
 	APawn* TargetPawnToPossess;
