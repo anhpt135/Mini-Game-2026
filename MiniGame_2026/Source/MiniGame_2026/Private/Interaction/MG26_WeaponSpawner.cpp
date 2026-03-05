@@ -31,10 +31,8 @@ void AMG26_WeaponSpawner::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AA
 		APawn* OverlappingPawn = Cast<APawn>(OtherActor);
 		if (OverlappingPawn)
 		{
-			if (HieuUngKhiLumVuKhi)
-			{
-				UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), HieuUngKhiLumVuKhi, GetActorLocation());
-			}
+			// Gọi sự kiện Blueprint để xử lý hiệu ứng
+			OnWeaponPickedUp(OverlappingPawn);
 			
 			// Gọi logic của lớp cơ sở để kích hoạt sự kiện/chiếm hữu
 			Super::OnOverlapBegin(OverlappedComp, OtherActor, OtherComp, OtherBodyIndex, bFromSweep, SweepResult);

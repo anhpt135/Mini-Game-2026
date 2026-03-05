@@ -38,7 +38,7 @@ void AMG26_PlayerControllerBase::SetupInputComponent()
 	}
 }
 
-void AMG26_PlayerControllerBase::SwitchToVehicle(APawn* NewVehiclePawn, AMG26_TriggerButton* Trigger)
+void AMG26_PlayerControllerBase::SwitchToVehicle(APawn* NewVehiclePawn)
 {
 	// Kiểm tra cờ cooldown trước khi thực hiện bất kỳ logic nào
 	if (!bCanTriggerPossess)
