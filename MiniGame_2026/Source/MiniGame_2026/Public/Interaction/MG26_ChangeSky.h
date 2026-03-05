@@ -28,6 +28,14 @@ protected:
 	UFUNCTION()
 	void OnOverlapEnd(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
 
+	// Sự kiện để Blueprint thực hiện logic khi vào vùng (ví dụ: Timeline đổi màu)
+	UFUNCTION(BlueprintImplementableEvent, Category = "Sky Control")
+	void BP_OnEnterSkyZone();
+
+	// Sự kiện để Blueprint thực hiện logic khi ra vùng
+	UFUNCTION(BlueprintImplementableEvent, Category = "Sky Control")
+	void BP_OnExitSkyZone();
+
 public:
 	// Được gọi mỗi khung hình
 	virtual void Tick(float DeltaTime) override;
@@ -41,7 +49,7 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Sky Control")
 	FLinearColor TargetSkyColor = FLinearColor::Red;
 
-private:
-	// Biến lưu màu gốc để khôi phục
+	// Biến lưu màu gốc để khôi phục (Blueprint có thể đọc để quay về màu cũ)
+	UPROPERTY(BlueprintReadOnly, Category = "Sky Control")
 	FLinearColor OriginalColor;
 };

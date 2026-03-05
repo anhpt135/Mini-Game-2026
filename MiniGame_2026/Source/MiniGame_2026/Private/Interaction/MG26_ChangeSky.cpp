@@ -57,11 +57,8 @@ void AMG26_ChangeSky::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor
 	// Kiểm tra nếu là Pawn (người chơi)
 	if (OtherActor && OtherActor != this && Cast<APawn>(OtherActor))
 	{
-		if (SunLight && SunLight->GetLightComponent())
-		{
-			// Đổi màu đèn sang màu mục tiêu (Đỏ)
-			SunLight->GetLightComponent()->SetLightColor(TargetSkyColor);
-		}
+		// Gọi sự kiện Blueprint để xử lý logic đổi màu (Timeline, v.v.)
+		BP_OnEnterSkyZone();
 	}
 }
 
@@ -70,10 +67,7 @@ void AMG26_ChangeSky::OnOverlapEnd(UPrimitiveComponent* OverlappedComp, AActor* 
 	// Kiểm tra nếu là Pawn (người chơi)
 	if (OtherActor && OtherActor != this && Cast<APawn>(OtherActor))
 	{
-		if (SunLight && SunLight->GetLightComponent())
-		{
-			// Trả lại màu gốc
-			SunLight->GetLightComponent()->SetLightColor(OriginalColor);
-		}
+		// Gọi sự kiện Blueprint để xử lý logic trả lại màu (Timeline, v.v.)
+		BP_OnExitSkyZone();
 	}
 }
