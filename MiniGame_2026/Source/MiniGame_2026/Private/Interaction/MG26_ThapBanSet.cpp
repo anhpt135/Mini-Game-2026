@@ -1,5 +1,5 @@
-﻿
-#include "Interaction/MG26_ThapBanSet.h"
+﻿#include "Interaction/MG26_ThapBanSet.h"
+#include "Interaction/MG26_LightningHitInterface.h"
 #include "Components/SphereComponent.h"
 #include "NiagaraComponent.h"
 #include "NiagaraFunctionLibrary.h"
@@ -92,6 +92,13 @@ void AMG26_ThapBanSet::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActo
 			{
 				HieuUngNiagara_SetDanh->Activate(true);
 			}
+
+			// Kiểm tra xem mục tiêu có implement Interface không
+			if (MucTieu->Implements<UMG26_LightningHitInterface>())
+			{
+				// Gọi hàm OnLightningHit thông qua Interface
+				IMG26_LightningHitInterface::Execute_OnLightningHit(MucTieu);
+			}
 		}
 	}
 }
@@ -105,6 +112,13 @@ void AMG26_ThapBanSet::OnOverlapEnd(UPrimitiveComponent* OverlappedComp, AActor*
 		if (HieuUngNiagara_SetDanh)
 		{
 			HieuUngNiagara_SetDanh->Deactivate();
+		}
+
+		// Kiểm tra xem mục tiêu có implement Interface không
+		if (MucTieu && MucTieu->Implements<UMG26_LightningHitInterface>())
+		{
+			// Gọi hàm OnLightningStop thông qua Interface
+			IMG26_LightningHitInterface::Execute_OnLightningStop(MucTieu);
 		}
 
 		// Xóa tham chiếu đến mục tiêu
