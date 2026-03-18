@@ -4,9 +4,11 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
+#include "Components/TimelineComponent.h"
 #include "MPC_ChangeColor.generated.h"
 
 class UMaterialParameterCollection;
+class UCurveFloat;
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class MINIGAME_2026_API UMPC_ChangeColor : public UActorComponent
@@ -14,42 +16,41 @@ class MINIGAME_2026_API UMPC_ChangeColor : public UActorComponent
 	GENERATED_BODY()
 
 public:	
-	// Thiết lập các giá trị mặc định cho Component này
 	UMPC_ChangeColor();
 
 protected:
-	// Được gọi khi trò chơi bắt đầu
 	virtual void BeginPlay() override;
 
-	// Hàm lắng nghe và xử lý khi nhận được tín hiệu Pawn Vừa Nhảy
+	// Hàm Callback được kích hoạt khi Pawn nhảy
 	UFUNCTION()
-	void HandleOnPawnJumped();
+	void HamCallbackNhayLen();
 
-	// Hàm lắng nghe và xử lý khi nhận được tín hiệu Pawn Vừa Chạm Đất
+	// Hàm Callback được kích hoạt khi Pawn chạm đất
 	UFUNCTION()
-	void HandleOnPawnLanded();
+	void HamCallbackChamDat();
+
+	// Hàm callback của Timeline
+	UFUNCTION()
+	void HamCallbackTimeline(float Value);
 
 public:	
-	// Được gọi mỗi khung hình
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
-	// File Material Parameter Collection chứa các biến toàn cục
+	// Thiết lập nơi chứa MPC và tên thông số của nó 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Material|Settings")
-	UMaterialParameterCollection* MyMPC;
+	UMaterialParameterCollection* MPCCuaTui;
 
-	// Tên của biến Scalar (Alpha) trong MPC cần thay đổi
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Material|Settings")
-	FName AlphaParameterName = FName("AlphaCuaEm");
+	FName TenThongSoMPC = FName("AlphaCuaEm");
 
-	// Giá trị Alpha muốn đặt khi nhân vật đang nhảy
+	// Biến con trỏ biểu đồ CURVE
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Material|Alpha Settings")
-	float JumpAlpha = 1.0f;
+	UCurveFloat* CurveCuaTui;
 
-	// Giá trị Alpha gốc muốn trả về khi nhân vật chạm đất
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Material|Alpha Settings")
-	float DefaultAlpha = 0.0f;
-
-	// Hàm cốt lõi chịu trách nhiệm giao tiếp với hệ thống Material để cập nhật Alpha
+	// Hàm thay đổi giá trị của MPC
 	UFUNCTION(BlueprintCallable, Category = "Material")
-	void UpdateMPCAlpha(float NewAlpha);
+	void ThayDoiGiaTriMPC(float NewAlpha);
+
+private:
+	FTimeline TimelineCuaTui;
 };

@@ -5,54 +5,71 @@
 #include "Kismet/KismetMaterialLibrary.h"
 #include "Materials/MaterialParameterCollection.h"
 #include "Framework/MG26_PawnBase.h"
+#include "Curves/CurveFloat.h"
 
-// Thiết lập các giá trị mặc định cho Component
 UMPC_ChangeColor::UMPC_ChangeColor()
 {
-	// Tắt Tick vì Component này hoạt động hoàn toàn dựa trên sự kiện (Event-driven) để tiết kiệm hiệu năng
-	PrimaryComponentTick.bCanEverTick = false;
+	PrimaryComponentTick.bCanEverTick = true;
 }
 
-// Được gọi khi trò chơi bắt đầu
 void UMPC_ChangeColor::BeginPlay()
 {
 	Super::BeginPlay();
 
-	// Tự động tìm Actor đang chứa Component này và ép kiểu về PawnBase
+	// Đăng ký hàm callback cho biến Delegate OnJumped/Landed
 	if (AMG26_PawnBase* MyPawn = Cast<AMG26_PawnBase>(GetOwner()))
 	{
-		// Cắm "tai nghe" vào 2 kênh sự kiện của Pawn để lắng nghe thay đổi trạng thái
-		MyPawn->OnJumped.AddDynamic(this, &UMPC_ChangeColor::HandleOnPawnJumped);
-		MyPawn->OnLanded.AddDynamic(this, &UMPC_ChangeColor::HandleOnPawnLanded);
+		MyPawn->OnJumped.AddDynamic(this, &UMPC_ChangeColor::HamCallbackNhayLen);
+		MyPawn->OnLanded.AddDynamic(this, &UMPC_ChangeColor::HamCallbackChamDat);
+	}
+
+	// Điều kiện cần số 1 của Timeline: Liên kết biểu đồ CurveFloat với hàm HamCallbackTimeline
+	if (CurveCuaTui)
+	{
+		FOnTimelineFloat TimelineProgressDelegate;
+		TimelineProgressDelegate.BindDynamic(this, &UMPC_ChangeColor::HamCallbackTimeline);
+		TimelineCuaTui.AddInterpFloat(CurveCuaTui, TimelineProgressDelegate);
 	}
 }
 
-// Được gọi mỗi khung hình (Hiện đã bị tắt)
 void UMPC_ChangeColor::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
+	
+	// Điều kiện cần số 2 của Timeline
+	TimelineCuaTui.TickTimeline(DeltaTime);
 }
+	// Điều kiện cần số 3 của Timeline: Khi Play hoặc Reverse....
 
-// Hàm này sẽ tự động chạy ngay khi nhận được tín hiệu OnJumped từ Pawn
-void UMPC_ChangeColor::HandleOnPawnJumped()
+// Hàm callback của MPC_CHangeColor kích hoạt khi nhân vật nhảy lên
+void UMPC_ChangeColor::HamCallbackNhayLen()
 {
-	// Áp dụng Alpha của trạng thái nhảy
-	UpdateMPCAlpha(JumpAlpha);
-}
-
-// Hàm này sẽ tự động chạy ngay khi nhận được tín hiệu OnLanded từ Pawn
-void UMPC_ChangeColor::HandleOnPawnLanded()
-{
-	// Trả về Alpha mặc định ban đầu
-	UpdateMPCAlpha(DefaultAlpha);
-}
-
-// Hàm xử lý cấp thấp, trực tiếp thay đổi giá trị trong Material Parameter Collection
-void UMPC_ChangeColor::UpdateMPCAlpha(float NewAlpha)
-{
-	if (MyMPC)
+	if (CurveCuaTui)
 	{
-		// Cập nhật giá trị Scalar Parameter dựa trên tên biến và giá trị được truyền vào
-		UKismetMaterialLibrary::SetScalarParameterValue(GetWorld(), MyMPC, AlphaParameterName, NewAlpha);
+		TimelineCuaTui.Play();
+	}
+}
+
+// Hàm callback của MPC_CHangeColor kích hoạt khi nhân vật chạm đất
+void UMPC_ChangeColor::HamCallbackChamDat()
+{
+	if (CurveCuaTui)
+	{
+		TimelineCuaTui.Reverse();
+	}
+}
+
+// Hàm callback từ Timeline chuyển tham số sang cho hàm ThayDoiGiaTriMPC
+void UMPC_ChangeColor::HamCallbackTimeline(float Value)
+{
+	ThayDoiGiaTriMPC(Value);
+}
+
+// Khai báo logic của hàm ThayDoiGiaTriMPC
+void UMPC_ChangeColor::ThayDoiGiaTriMPC(float NewAlpha)
+{
+	if (MPCCuaTui)
+	{
+		UKismetMaterialLibrary::SetScalarParameterValue(GetWorld(), MPCCuaTui, TenThongSoMPC, NewAlpha);
 	}
 }
