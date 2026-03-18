@@ -7,6 +7,10 @@
 #include "InputActionValue.h"
 #include "MG26_PawnBase.generated.h"
 
+// Khai báo các kênh sự kiện (Delegate) để thông báo cho các component khác
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnPawnJumped);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnPawnLanded);
+
 class UInputMappingContext;
 class UInputAction;
 class UCameraComponent;
@@ -22,6 +26,14 @@ class MINIGAME_2026_API AMG26_PawnBase : public APawn
 public:
 	// Thiết lập các giá trị mặc định cho các thuộc tính của pawn này
 	AMG26_PawnBase();
+
+	// Sự kiện phát ra khi nhân vật thực hiện thao tác nhảy
+	UPROPERTY(BlueprintAssignable, BlueprintCallable, Category = "Events")
+	FOnPawnJumped OnJumped;
+
+	// Sự kiện phát ra khi nhân vật vừa chạm đất sau khi rơi
+	UPROPERTY(BlueprintAssignable, BlueprintCallable, Category = "Events")
+	FOnPawnLanded OnLanded;
 
 protected:
 	// Được gọi khi trò chơi bắt đầu hoặc khi được sinh ra

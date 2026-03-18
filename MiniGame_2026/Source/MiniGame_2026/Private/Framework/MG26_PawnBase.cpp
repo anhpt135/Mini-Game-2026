@@ -85,6 +85,11 @@ void AMG26_PawnBase::Tick(float DeltaTime)
 
 	if (bHitGround && VerticalVelocity <= 0.0f)
 	{
+		// Nếu khung hình trước đang lơ lửng mà khung hình này chạm đất -> Phát tín hiệu Vừa Chạm Đất
+		if (!bIsGrounded)
+		{
+			OnLanded.Broadcast();
+		}
 		bIsGrounded = true;
 		VerticalVelocity = 0.0f;
 	}
@@ -173,5 +178,8 @@ void AMG26_PawnBase::Jump(const FInputActionValue& Value)
 	{
 		VerticalVelocity = JumpVelocity;
 		bIsGrounded = false;
+		
+		// Ngay khi rời khỏi mặt đất, phát tín hiệu Nhảy
+		OnJumped.Broadcast();
 	}
 }
