@@ -3,8 +3,6 @@
 
 #include "Character/MG26_Pawn_03_SideScroller.h"
 #include "GameFramework/SpringArmComponent.h"
-#include "Camera/CameraComponent.h"
-#include "Components/CapsuleComponent.h"
 #include "InputActionValue.h"
 
 AMG26_Pawn_03_SideScroller::AMG26_Pawn_03_SideScroller()
@@ -22,9 +20,6 @@ AMG26_Pawn_03_SideScroller::AMG26_Pawn_03_SideScroller()
 		// 3. Kéo xa Camera ra một chút (bạn có thể chỉnh lại trên Blueprint)
 		SpringArmComponent->TargetArmLength = 1000.0f; 
 		
-		// 4. Xoay Camera nằm ngang góc -90 độ so với nhân vật (nhìn dọc theo trục Y, bao quát mặt phẳng XZ)
-		SpringArmComponent->SetRelativeRotation(FRotator(0.0f, -90.0f, 0.0f));
-		
 		// Tắt collision của camera để không bị giật nếu có vật cản phía trước
 		SpringArmComponent->bDoCollisionTest = false; 
 	}
@@ -34,23 +29,30 @@ void AMG26_Pawn_03_SideScroller::BeginPlay()
 {
 	Super::BeginPlay();
 
-	// Lưu lại tọa độ trục Y hiện tại của Pawn khi bắt đầu màn chơi
-	LockedYPosition = GetActorLocation().Y;
+	// --- TÍNH TOÁN TRƯỚC MỌI THỨ DỰA TRÊN GÓC XOAY TRONG EDITOR ---
+
+	// Lưu lại góc xoay ban đầu của Pawn
+	InitialRotation = GetActorRotation();
+
+	// Vector chỉ hướng "vào trong" màn hình (vuông góc với hướng nhìn của camera)
+	// Đây chính là pháp tuyến của mặt phẳng di chuyển
+	FVector PlaneNormal = InitialRotation.RotateVector(FVector::RightVector); // FVector(0,1,0)
+
+	// Tạo mặt phẳng di chuyển dựa trên vị trí và pháp tuyến
+	MovementPlane = FPlane(GetActorLocation(), PlaneNormal);
+
+	// Vector chỉ hướng "sang phải" trên màn hình
+	RightDirection = InitialRotation.RotateVector(FVector::ForwardVector); // FVector(1,0,0)
 }
 
 void AMG26_Pawn_03_SideScroller::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	// Ép Pawn luôn nằm trên trục Y đã khóa
-	FVector CurrentLocation = GetActorLocation();
-	
-	// Chỉ set lại vị trí nếu bị lọt ra khỏi mặt phẳng
-	if (!FMath::IsNearlyEqual(CurrentLocation.Y, LockedYPosition, 0.1f))
-	{
-		CurrentLocation.Y = LockedYPosition;
-		SetActorLocation(CurrentLocation);
-	}
+	// Chiếu vị trí hiện tại của Pawn lên mặt phẳng di chuyển đã tính toán
+	// Điều này đảm bảo Pawn luôn bị "hút" về đúng mặt phẳng, dù nó xoay góc nào
+	FVector ProjectedLocation = FPlane::PointPlaneProject(GetActorLocation(), MovementPlane);
+	SetActorLocation(ProjectedLocation);
 }
 
 void AMG26_Pawn_03_SideScroller::Move(const FInputActionValue& Value)
@@ -59,20 +61,21 @@ void AMG26_Pawn_03_SideScroller::Move(const FInputActionValue& Value)
 
 	if (Controller != nullptr)
 	{
-		// Cố định hướng di chuyển ngang là trục X của thế giới (World X)
-		FVector ForwardDirection = FVector(1.0f, 0.0f, 0.0f);
+		// Di chuyển theo hướng "Sang Phải" đã được tính toán trước
+		AddMovementInput(RightDirection, MovementVector.X);
 		
-		// Bỏ qua Input Y (tiến/lùi), chỉ dùng Input X (trái/phải)
-		AddMovementInput(ForwardDirection, MovementVector.X);
-		
-		// Ép nhân vật quay mặt sang trái/phải tương ứng với hướng đi
+		// Xoay nhân vật tương đối so với góc xoay ban đầu
 		if (MovementVector.X > 0.1f)
 		{
-			SetActorRotation(FRotator(0.0f, 0.0f, 0.0f)); // Nhìn phải
+			// Nhìn về hướng "Sang Phải"
+			SetActorRotation(InitialRotation); 
 		}
 		else if (MovementVector.X < -0.1f)
 		{
-			SetActorRotation(FRotator(0.0f, 180.0f, 0.0f)); // Nhìn trái
+			// Nhìn về hướng "Sang Trái" (xoay 180 độ so với hướng ban đầu)
+			FRotator LeftRotation = InitialRotation;
+			LeftRotation.Yaw += 180.0f;
+			SetActorRotation(LeftRotation);
 		}
 	}
 }

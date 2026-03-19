@@ -28,6 +28,12 @@ protected:
 	virtual void Look(const FInputActionValue& Value) override;
 
 private:
-	// Tọa độ trục Y bị khóa
-	float LockedYPosition;
+	// Mặt phẳng di chuyển được tính toán lúc bắt đầu
+	FPlane MovementPlane;
+	
+	// Hướng di chuyển "Sang Phải" tương đối so với góc nhìn ban đầu
+	FVector RightDirection;
+
+	// Góc xoay ban đầu của Pawn
+	FRotator InitialRotation;
 };
