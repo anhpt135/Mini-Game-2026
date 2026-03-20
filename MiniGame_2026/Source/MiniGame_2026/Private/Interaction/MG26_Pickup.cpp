@@ -4,7 +4,7 @@
 #include "Interaction/MG26_Pickup.h"
 #include "Components/SphereComponent.h"
 #include "Components/StaticMeshComponent.h"
-#include "Components/PointLightComponent.h"
+#include "Components/LocalLightComponent.h"
 
 // Sets default values
 AMG26_Pickup::AMG26_Pickup()
@@ -22,8 +22,10 @@ AMG26_Pickup::AMG26_Pickup()
 	// Ignore Camera Collision
 	PickupMesh->SetCollisionResponseToChannel(ECC_Camera, ECR_Ignore);
 
-	PointLight = CreateDefaultSubobject<UPointLightComponent>(TEXT("PointLight"));
-	PointLight->SetupAttachment(RootComponent);
+	// Chúng ta không tạo cứng PointLight hay SpotLight trong C++ nữa.
+	// Bạn sẽ chủ động thêm Component (PointLight hoặc SpotLight) trực tiếp vào Blueprint
+	// C++ sẽ tự động tìm thấy cái đèn đó lúc BeginPlay()
+	PickupLight = nullptr;
 
 	MaxLightIntensity = 5000.f;
 }
@@ -34,7 +36,14 @@ void AMG26_Pickup::BeginPlay()
 	Super::BeginPlay();
 	
 	InitialScale = PickupMesh->GetRelativeScale3D();
-	PointLight->SetIntensity(0.f);
+
+	// Tự động tìm Component đèn (LocalLightComponent - Cha của PointLight & SpotLight)
+	PickupLight = Cast<ULocalLightComponent>(GetComponentByClass(ULocalLightComponent::StaticClass()));
+
+	if (PickupLight)
+	{
+		PickupLight->SetIntensity(0.f);
+	}
 
 	if (ScaleCurve && LightCurve)
 	{
@@ -75,10 +84,10 @@ void AMG26_Pickup::TimelineUpdate()
 		PickupMesh->SetRelativeScale3D(InitialScale * ScaleFactor);
 	}
 
-	if (LightCurve)
+	if (LightCurve && PickupLight)
 	{
 		float LightIntensity = LightCurve->GetFloatValue(CurrentPlaybackTime);
-		PointLight->SetIntensity(LightIntensity * MaxLightIntensity);
+		PickupLight->SetIntensity(LightIntensity * MaxLightIntensity);
 	}
 }
 

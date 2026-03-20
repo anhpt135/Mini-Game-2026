@@ -9,7 +9,7 @@
 
 class USphereComponent;
 class UStaticMeshComponent;
-class UPointLightComponent;
+class ULocalLightComponent;
 class UCurveFloat;
 
 UCLASS()
@@ -31,8 +31,9 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
 	UStaticMeshComponent* PickupMesh;
 
+	// Component đèn sẽ được tìm tự động (có thể là PointLight hoặc SpotLight)
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
-	UPointLightComponent* PointLight;
+	ULocalLightComponent* PickupLight;
 
 	// Cấu trúc Timeline
 	FTimeline PickupTimeline;
