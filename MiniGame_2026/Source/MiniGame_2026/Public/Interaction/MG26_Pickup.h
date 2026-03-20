@@ -18,57 +18,56 @@ class MINIGAME_2026_API AMG26_Pickup : public AActor
 	GENERATED_BODY()
 	
 public:	
-	// Thiết lập các giá trị mặc định cho các thuộc tính của Actor này
 	AMG26_Pickup();
 
 protected:
-	// Được gọi khi trò chơi bắt đầu hoặc khi Actor được sinh ra (spawned)
 	virtual void BeginPlay() override;
 
-	// Component hình cầu dùng để kiểm tra va chạm (Overlap)
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
 	USphereComponent* OverlapSphere;
 
-	// Component hiển thị hình ảnh 3D (Mesh) của vật phẩm
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
 	UStaticMeshComponent* PickupMesh;
 
-	// Component đèn sẽ được tìm tự động (có thể là PointLight hoặc SpotLight)
+	// Đèn sẽ được code tự động tìm (PointLight hoặc SpotLight)
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
 	ULocalLightComponent* PickupLight;
 
-	// Cấu trúc Timeline dùng để tạo hiệu ứng hoạt ảnh (animation) theo thời gian
+	// Timeline điều khiển hiệu ứng hoạt ảnh
 	FTimeline PickupTimeline;
 
-	// Đường cong (Curve) định nghĩa sự thay đổi kích thước (Scale) của vật phẩm
+	// Curve điều khiển Scale
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Animation")
 	UCurveFloat* ScaleCurve;
 
-	// Đường cong (Curve) định nghĩa sự thay đổi độ sáng (Intensity) của đèn
+	// Curve điều khiển độ sáng của đèn
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Animation")
 	UCurveFloat* LightCurve;
 
-	// Độ sáng tối đa của đèn khi được kích hoạt
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Animation")
 	float MaxLightIntensity;
 
-	// Lưu trữ kích thước ban đầu của vật phẩm
 	FVector InitialScale;
 
-	// Khai báo hàm Callback khi có một Actor khác bắt đầu đi vào vùng Sphere (Overlap)
+	// Bộ đếm thời gian (Timer) dùng để trì hoãn việc Reverse
+	FTimerHandle ReverseTimerHandle;
+
+	// Xử lý sự kiện khi có Actor đi vào/ra vùng Overlap
 	UFUNCTION()
 	void OnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 
-	// Khai báo hàm Callback khi một Actor khác đi ra khỏi vùng Sphere
 	UFUNCTION()
 	void OnOverlapEnd(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
 
-	// Hàm được gọi mỗi khi Timeline cập nhật (chạy theo từng frame)
+	// Hàm Delegate được gọi mỗi frame khi Timeline đang chạy
 	UFUNCTION()
 	void TimelineUpdate();
 
+	// Hàm được gọi sau khi hết thời gian Delay (0.5s)
+	UFUNCTION()
+	void ReverseTimeline();
+
 public:	
-	// Được gọi mỗi frame (khung hình)
 	virtual void Tick(float DeltaTime) override;
 
 };
