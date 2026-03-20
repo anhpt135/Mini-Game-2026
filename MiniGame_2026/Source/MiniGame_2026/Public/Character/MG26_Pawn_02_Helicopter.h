@@ -4,18 +4,18 @@
 
 #include "CoreMinimal.h"
 #include "Framework/MG26_PawnBase.h"
-#include "MG26_Pawn_02.generated.h"
+#include "MG26_Pawn_02_Helicopter.generated.h"
 
 /**
  * Pawn điều khiển kiểu Trực thăng (Helicopter)
  */
 UCLASS()
-class MINIGAME_2026_API AMG26_Pawn_02 : public AMG26_PawnBase
+class MINIGAME_2026_API AMG26_Pawn_02_Helicopter : public AMG26_PawnBase
 {
 	GENERATED_BODY()
 
 public:
-	AMG26_Pawn_02();
+	AMG26_Pawn_02_Helicopter();
 
 	virtual void Tick(float DeltaTime) override;
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;

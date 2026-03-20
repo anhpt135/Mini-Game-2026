@@ -4,18 +4,18 @@
 
 #include "CoreMinimal.h"
 #include "Framework/MG26_PawnBase.h"
-#include "MG26_Pawn_01.generated.h"
+#include "MG26_Pawn_01_Car.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class MINIGAME_2026_API AMG26_Pawn_01 : public AMG26_PawnBase
+class MINIGAME_2026_API AMG26_Pawn_01_Car : public AMG26_PawnBase
 {
 	GENERATED_BODY()
 
 public:
-	AMG26_Pawn_01();
+	AMG26_Pawn_01_Car();
 
 protected:
 	virtual void Tick(float DeltaTime) override;

@@ -1,7 +1,7 @@
 // Điền thông báo bản quyền của bạn vào trang Mô tả của Cài đặt Dự án.
 
 
-#include "Character/MG26_Pawn_02.h"
+#include "Character/MG26_Pawn_02_Helicopter.h"
 #include "GameFramework/FloatingPawnMovement.h"
 #include "Components/CapsuleComponent.h"
 #include "GameFramework/SpringArmComponent.h"
@@ -9,7 +9,7 @@
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
 
-AMG26_Pawn_02::AMG26_Pawn_02()
+AMG26_Pawn_02_Helicopter::AMG26_Pawn_02_Helicopter()
 {
 	// Tắt xoay theo controller vì trực thăng sẽ tự xoay
 	bUseControllerRotationYaw = false;
@@ -56,7 +56,7 @@ AMG26_Pawn_02::AMG26_Pawn_02()
 	GroundFriction = 5.0f;
 }
 
-void AMG26_Pawn_02::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
+void AMG26_Pawn_02_Helicopter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	// Gọi Super để bind các action cơ bản (Look)
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
@@ -66,20 +66,20 @@ void AMG26_Pawn_02::SetupPlayerInputComponent(UInputComponent* PlayerInputCompon
 		// Bind MoveAction (W/S/A/D)
 		if (MoveAction)
 		{
-			EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, &AMG26_Pawn_02::Move);
-			EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Completed, this, &AMG26_Pawn_02::Move); // Reset khi thả phím
+			EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, &AMG26_Pawn_02_Helicopter::Move);
+			EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Completed, this, &AMG26_Pawn_02_Helicopter::Move); // Reset khi thả phím
 		}
 
 		// Bind JumpAction (Space) cho bay lên
 		if (JumpAction)
 		{
-			EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Triggered, this, &AMG26_Pawn_02::StartAscend);
-			EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Completed, this, &AMG26_Pawn_02::StopAscend);
+			EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Triggered, this, &AMG26_Pawn_02_Helicopter::StartAscend);
+			EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Completed, this, &AMG26_Pawn_02_Helicopter::StopAscend);
 		}
 	}
 }
 
-void AMG26_Pawn_02::Move(const FInputActionValue& Value)
+void AMG26_Pawn_02_Helicopter::Move(const FInputActionValue& Value)
 {
 	// Lấy giá trị input (W/S là Y, A/D là X)
 	FVector2D MovementVector = Value.Get<FVector2D>();
@@ -87,17 +87,17 @@ void AMG26_Pawn_02::Move(const FInputActionValue& Value)
 	TargetTurnInput = MovementVector.X; // Xoay trái/phải
 }
 
-void AMG26_Pawn_02::StartAscend(const FInputActionValue& Value)
+void AMG26_Pawn_02_Helicopter::StartAscend(const FInputActionValue& Value)
 {
 	bIsAscending = true;
 }
 
-void AMG26_Pawn_02::StopAscend(const FInputActionValue& Value)
+void AMG26_Pawn_02_Helicopter::StopAscend(const FInputActionValue& Value)
 {
 	bIsAscending = false;
 }
 
-void AMG26_Pawn_02::Tick(float DeltaTime)
+void AMG26_Pawn_02_Helicopter::Tick(float DeltaTime)
 {
 	// QUAN TRỌNG: KHÔNG gọi Super::Tick(DeltaTime) ở đây
 	// Vì Base class sẽ áp dụng trọng lực riêng gây xung đột với logic bay của chúng ta.

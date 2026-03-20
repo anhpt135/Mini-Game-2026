@@ -1,7 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "Character/MG26_Pawn_01.h"
+#include "Character/MG26_Pawn_01_Car.h"
 #include "GameFramework/FloatingPawnMovement.h"
 #include "Components/CapsuleComponent.h"
 #include "GameFramework/SpringArmComponent.h"
@@ -9,7 +9,7 @@
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
 
-AMG26_Pawn_01::AMG26_Pawn_01()
+AMG26_Pawn_01_Car::AMG26_Pawn_01_Car()
 {
 	// Thiết lập các giá trị mặc định cho xe
 	CurrentForwardSpeed = 0.0f;
@@ -41,7 +41,7 @@ AMG26_Pawn_01::AMG26_Pawn_01()
 	}
 }
 
-void AMG26_Pawn_01::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
+void AMG26_Pawn_01_Car::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	// Gọi Super để bind các action cơ bản (Jump, Look)
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
@@ -52,12 +52,12 @@ void AMG26_Pawn_01::SetupPlayerInputComponent(UInputComponent* PlayerInputCompon
 		if (MoveAction)
 		{
 			// Bind sự kiện Completed (nhả phím) để reset input về 0
-			EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Completed, this, &AMG26_Pawn_01::StopMoving);
+			EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Completed, this, &AMG26_Pawn_01_Car::StopMoving);
 		}
 	}
 }
 
-void AMG26_Pawn_01::Move(const FInputActionValue& Value)
+void AMG26_Pawn_01_Car::Move(const FInputActionValue& Value)
 {
 	// Lấy giá trị input (W/S là Y, A/D là X)
 	FVector2D MovementVector = Value.Get<FVector2D>();
@@ -65,14 +65,14 @@ void AMG26_Pawn_01::Move(const FInputActionValue& Value)
 	CurrentTurnInput = MovementVector.X; // Lái trái/phải
 }
 
-void AMG26_Pawn_01::StopMoving(const FInputActionValue& Value)
+void AMG26_Pawn_01_Car::StopMoving(const FInputActionValue& Value)
 {
 	// Reset input khi nhả phím
 	CurrentThrottleInput = 0.0f;
 	CurrentTurnInput = 0.0f;
 }
 
-void AMG26_Pawn_01::Tick(float DeltaTime)
+void AMG26_Pawn_01_Car::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
