@@ -57,23 +57,12 @@ void AMG26_Pawn_03_SideScroller::PossessedBy(AController* NewController)
 				PlayerController->bEnableMouseOverEvents = true;
 
 				// --- Gán PostProcessComponent cho Widget ---
-				UMG26_PostProcessWidgetBase* PostProcessWidget = Cast<UMG26_PostProcessWidgetBase>(PostProcessWidgetInstance);
-				if (PostProcessWidget)
+				if (UMG26_PostProcessWidgetBase* PostProcessWidget = Cast<UMG26_PostProcessWidgetBase>(PostProcessWidgetInstance))
 				{
-					UPPM_DoiMauPostProcessComponent* PPMComponent = FindComponentByClass<UPPM_DoiMauPostProcessComponent>();
-					if (PPMComponent)
+					if (UPPM_DoiMauPostProcessComponent* PPMComponent = FindComponentByClass<UPPM_DoiMauPostProcessComponent>())
 					{
 						PostProcessWidget->SetPostProcessComponent(PPMComponent);
-						UE_LOG(LogTemp, Log, TEXT("AMG26_Pawn_03_SideScroller: Successfully set PPM_DoiMauPostProcessComponent to widget."));
 					}
-					else
-					{
-						UE_LOG(LogTemp, Error, TEXT("AMG26_Pawn_03_SideScroller: Failed to find PPM_DoiMauPostProcessComponent on this Pawn!"));
-					}
-				}
-				else
-				{
-					UE_LOG(LogTemp, Error, TEXT("AMG26_Pawn_03_SideScroller: PostProcessWidgetInstance is not of type UMG26_PostProcessWidgetBase!"));
 				}
 			}
 		}
@@ -140,7 +129,7 @@ void AMG26_Pawn_03_SideScroller::Tick(float DeltaTime)
 
 void AMG26_Pawn_03_SideScroller::Move(const FInputActionValue& Value)
 {
-	FVector2D MovementVector = Value.Get<FVector2D>();
+	FVector2D MovementVector = Value.Get<FVector2D>(); // Đã sửa F2D thành FVector2D
 
 	if (Controller != nullptr)
 	{
