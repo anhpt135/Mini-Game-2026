@@ -17,6 +17,9 @@ class MINIGAME_2026_API AMG26_Pawn_03_SideScroller : public AMG26_PawnBase
 public:
 	AMG26_Pawn_03_SideScroller();
 
+	virtual void PossessedBy(AController* NewController) override;
+	virtual void UnPossessed() override;
+
 protected:
 	virtual void BeginPlay() override;
 	virtual void Tick(float DeltaTime) override;
@@ -27,7 +30,15 @@ protected:
 	// Ghi đè hàm nhìn để vô hiệu hóa xoay camera bằng chuột
 	virtual void Look(const FInputActionValue& Value) override;
 
+	// Lớp Widget UI để tạo khi Pawn được điều khiển
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "UI")
+	TSubclassOf<class UUserWidget> PostProcessWidgetClass;
+
 private:
+	// Lưu lại tham chiếu đến Widget đã tạo
+	UPROPERTY()
+	class UUserWidget* PostProcessWidgetInstance;
+
 	// Mặt phẳng di chuyển được tính toán lúc bắt đầu
 	FPlane MovementPlane;
 	

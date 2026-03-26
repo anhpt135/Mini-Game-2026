@@ -4,6 +4,10 @@
 #include "Character/MG26_Pawn_03_SideScroller.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "InputActionValue.h"
+#include "Blueprint/UserWidget.h"
+#include "GameFramework/PlayerController.h"
+#include "HUD/MG26_PostProcessWidgetBase.h" // Thêm include cho widget C++ của bạn
+#include "Component/PPM_DoiMauPostProcessComponent.h" // Thêm include cho component của bạn
 
 AMG26_Pawn_03_SideScroller::AMG26_Pawn_03_SideScroller()
 {
@@ -22,6 +26,85 @@ AMG26_Pawn_03_SideScroller::AMG26_Pawn_03_SideScroller()
 		
 		// Tắt collision của camera để không bị giật nếu có vật cản phía trước
 		SpringArmComponent->bDoCollisionTest = false; 
+	}
+}
+
+void AMG26_Pawn_03_SideScroller::PossessedBy(AController* NewController)
+{
+	Super::PossessedBy(NewController);
+
+	if (PostProcessWidgetClass)
+	{
+		APlayerController* PlayerController = Cast<APlayerController>(NewController);
+		if (PlayerController)
+		{
+			PostProcessWidgetInstance = CreateWidget<UUserWidget>(PlayerController, PostProcessWidgetClass);
+			if (PostProcessWidgetInstance)
+			{
+				PostProcessWidgetInstance->AddToViewport();
+
+				// Chuyển sang chế độ input cho phép tương tác với UI
+				FInputModeGameAndUI InputModeData;
+				// Đặt focus rõ ràng cho widget chính
+				InputModeData.SetWidgetToFocus(PostProcessWidgetInstance->TakeWidget());
+				// Đảm bảo chuột không bị khóa vào viewport
+				InputModeData.SetLockMouseToViewportBehavior(EMouseLockMode::DoNotLock);
+				PlayerController->SetInputMode(InputModeData);
+
+				// Hiện con trỏ chuột và kích hoạt sự kiện click/mouse over
+				PlayerController->bShowMouseCursor = true;
+				PlayerController->bEnableClickEvents = true;
+				PlayerController->bEnableMouseOverEvents = true;
+
+				// --- Gán PostProcessComponent cho Widget ---
+				UMG26_PostProcessWidgetBase* PostProcessWidget = Cast<UMG26_PostProcessWidgetBase>(PostProcessWidgetInstance);
+				if (PostProcessWidget)
+				{
+					UPPM_DoiMauPostProcessComponent* PPMComponent = FindComponentByClass<UPPM_DoiMauPostProcessComponent>();
+					if (PPMComponent)
+					{
+						PostProcessWidget->SetPostProcessComponent(PPMComponent);
+						UE_LOG(LogTemp, Log, TEXT("AMG26_Pawn_03_SideScroller: Successfully set PPM_DoiMauPostProcessComponent to widget."));
+					}
+					else
+					{
+						UE_LOG(LogTemp, Error, TEXT("AMG26_Pawn_03_SideScroller: Failed to find PPM_DoiMauPostProcessComponent on this Pawn!"));
+					}
+				}
+				else
+				{
+					UE_LOG(LogTemp, Error, TEXT("AMG26_Pawn_03_SideScroller: PostProcessWidgetInstance is not of type UMG26_PostProcessWidgetBase!"));
+				}
+			}
+		}
+	}
+}
+
+void AMG26_Pawn_03_SideScroller::UnPossessed()
+{
+	// Lấy PlayerController TRƯỚC khi gọi hàm cha, vì nó sẽ bị xóa sau đó
+	APlayerController* PlayerController = Cast<APlayerController>(GetController());
+	
+	Super::UnPossessed();
+
+	// Dọn dẹp Widget
+	if (PostProcessWidgetInstance)
+	{
+		PostProcessWidgetInstance->RemoveFromParent();
+		PostProcessWidgetInstance = nullptr;
+	}
+
+	// Khôi phục trạng thái input và chuột
+	if (PlayerController)
+	{
+		// Trả lại chế độ input chỉ cho game
+		FInputModeGameOnly InputModeData;
+		PlayerController->SetInputMode(InputModeData);
+
+		// Ẩn con trỏ chuột và tắt sự kiện click/mouse over
+		PlayerController->bShowMouseCursor = false;
+		PlayerController->bEnableClickEvents = false;
+		PlayerController->bEnableMouseOverEvents = false;
 	}
 }
 
