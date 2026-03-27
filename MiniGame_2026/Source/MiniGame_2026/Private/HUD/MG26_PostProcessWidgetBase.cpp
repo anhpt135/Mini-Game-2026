@@ -1,5 +1,3 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
 
 #include "HUD/MG26_PostProcessWidgetBase.h"
 #include "GameFramework/Pawn.h"
@@ -7,66 +5,49 @@
 #include "Components/Slider.h"
 #include "Component/PPM_DoiMauPostProcessComponent.h"
 
-void UMG26_PostProcessWidgetBase::NativeConstruct()
-{
-	// Luôn gọi hàm của lớp cha trước tiên!
-	Super::NativeConstruct();
-
-	// Logic tìm kiếm PostProcessComponentRef và bind sự kiện đã được chuyển sang SetPostProcessComponent()
-	// để đảm bảo component đã sẵn sàng khi widget được khởi tạo.
-}
-
+// Hàm này lấy tham chiếu đến Component từ Pawn và đăng ký các sự kiện của UI (CheckBox và Sliders)
 void UMG26_PostProcessWidgetBase::SetPostProcessComponent(UPPM_DoiMauPostProcessComponent* InComponent)
 {
 	PostProcessComponentRef = InComponent;
 
 	if (PostProcessComponentRef)
 	{
-		// --- Đấu dây (Bind) sự kiện từ UI vào các hàm C++ ---
+		// Đăng ký sự kiện CheckBox.
 		if (Check_ToggleEffect)
 		{
-			Check_ToggleEffect->OnCheckStateChanged.AddDynamic(this, &UMG26_PostProcessWidgetBase::HandleToggleEffectChanged);
-			// Khởi tạo trạng thái ban đầu của Checkbox
-			// Giả định PostProcessComponentRef có hàm IsEffectEnabled()
-			// Check_ToggleEffect->SetIsChecked(PostProcessComponentRef->IsEffectEnabled());
+			Check_ToggleEffect->OnCheckStateChanged.AddDynamic(this, &UMG26_PostProcessWidgetBase::CallbackToggleEffectChanged);
 		}
-
-		// Giả định PostProcessComponentRef có hàm GetCurrentColor() trả về FLinearColor
-		// FLinearColor CurrentColor = PostProcessComponentRef->GetCurrentColor();
-
+		
+		// Đăng ký sự kiện Slider.
 		if (Slider_R)
 		{
-			Slider_R->OnValueChanged.AddDynamic(this, &UMG26_PostProcessWidgetBase::HandleColorSliderChanged);
-			// Slider_R->SetValue(CurrentColor.R);
+			Slider_R->OnValueChanged.AddDynamic(this, &UMG26_PostProcessWidgetBase::CallbackColorSliderChanged);
 		}
-
+		
 		if (Slider_G)
 		{
-			Slider_G->OnValueChanged.AddDynamic(this, &UMG26_PostProcessWidgetBase::HandleColorSliderChanged);
-			// Slider_G->SetValue(CurrentColor.G);
+			Slider_G->OnValueChanged.AddDynamic(this, &UMG26_PostProcessWidgetBase::CallbackColorSliderChanged);
 		}
-
+		
 		if (Slider_B)
 		{
-			Slider_B->OnValueChanged.AddDynamic(this, &UMG26_PostProcessWidgetBase::HandleColorSliderChanged);
-			// Slider_B->SetValue(CurrentColor.B);
+			Slider_B->OnValueChanged.AddDynamic(this, &UMG26_PostProcessWidgetBase::CallbackColorSliderChanged);
 		}
 	}
 }
 
-void UMG26_PostProcessWidgetBase::HandleToggleEffectChanged(bool bIsChecked)
+// 2 hàm callback truyền tham số (true/false và màu) ngược lại component
+void UMG26_PostProcessWidgetBase::CallbackToggleEffectChanged(bool bIsChecked)
 {
 	if (PostProcessComponentRef)
 	{
 		PostProcessComponentRef->TogglePostProcess(bIsChecked);
 	}
 }
-
-void UMG26_PostProcessWidgetBase::HandleColorSliderChanged(float InValue)
+void UMG26_PostProcessWidgetBase::CallbackColorSliderChanged(float InValue)
 {
 	if (PostProcessComponentRef && Slider_R && Slider_G && Slider_B)
 	{
-		// Lấy giá trị từ cả 3 slider và gom thành một FLinearColor
 		const FLinearColor NewColor(Slider_R->GetValue(), Slider_G->GetValue(), Slider_B->GetValue());
 		PostProcessComponentRef->UpdateColorTinting(NewColor);
 	}

@@ -31,7 +31,7 @@ void UPPM_DoiMauPostProcessComponent::BeginPlay()
 	}
 }
 
-// Hàm Bật/Tắt hiệu ứng, được gọi từ sự kiện OnCheckStateChanged của Checkbox
+// Nhận true/false từ Widget để bật/tắt hiệu ứng Post Process trên Camera
 void UPPM_DoiMauPostProcessComponent::TogglePostProcess(bool bEnableEffect)
 {
 	if (!OwnerCamera || !DynamicMat)
@@ -51,7 +51,7 @@ void UPPM_DoiMauPostProcessComponent::TogglePostProcess(bool bEnableEffect)
 	}
 }
 
-// Hàm cập nhật màu sắc, được gọi từ sự kiện OnValueChanged của 3 thanh Slider (sau khi đã gom lại thành 1 LinearColor)
+// Hàm này nhận màu mới từ Widget và cập nhật giá trị Vector Parameter trong Material để thay đổi màu sắc của hiệu ứng Post Process
 void UPPM_DoiMauPostProcessComponent::UpdateColorTinting(FLinearColor NewColor)
 {
 	if (!DynamicMat)

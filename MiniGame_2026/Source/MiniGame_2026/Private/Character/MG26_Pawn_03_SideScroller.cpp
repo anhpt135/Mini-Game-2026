@@ -28,36 +28,34 @@ AMG26_Pawn_03_SideScroller::AMG26_Pawn_03_SideScroller()
 		SpringArmComponent->bDoCollisionTest = false; 
 	}
 }
-
+// Hàm này được gọi khi Pawn được điều khiển bởi một Controller (thường là PlayerController). Nó sẽ tạo Widget UI và thiết lập chế độ input để tương tác với UI đó.
 void AMG26_Pawn_03_SideScroller::PossessedBy(AController* NewController)
 {
 	Super::PossessedBy(NewController);
 
-	if (PostProcessWidgetClass)
+	if (WidgetCuaTui)
 	{
 		APlayerController* PlayerController = Cast<APlayerController>(NewController);
 		if (PlayerController)
 		{
-			PostProcessWidgetInstance = CreateWidget<UUserWidget>(PlayerController, PostProcessWidgetClass);
-			if (PostProcessWidgetInstance)
+			ConTroWidget = CreateWidget<UUserWidget>(PlayerController, WidgetCuaTui);
+			if (ConTroWidget)
 			{
-				PostProcessWidgetInstance->AddToViewport();
+				ConTroWidget->AddToViewport();
 
 				// Chuyển sang chế độ input cho phép tương tác với UI
 				FInputModeGameAndUI InputModeData;
-				// Đặt focus rõ ràng cho widget chính
-				InputModeData.SetWidgetToFocus(PostProcessWidgetInstance->TakeWidget());
-				// Đảm bảo chuột không bị khóa vào viewport
+				InputModeData.SetWidgetToFocus(ConTroWidget->TakeWidget());
 				InputModeData.SetLockMouseToViewportBehavior(EMouseLockMode::DoNotLock);
+				
+				// Áp dụng chế độ input mới cho PlayerController
 				PlayerController->SetInputMode(InputModeData);
-
-				// Hiện con trỏ chuột và kích hoạt sự kiện click/mouse over
 				PlayerController->bShowMouseCursor = true;
 				PlayerController->bEnableClickEvents = true;
 				PlayerController->bEnableMouseOverEvents = true;
 
 				// --- Gán PostProcessComponent cho Widget ---
-				if (UMG26_PostProcessWidgetBase* PostProcessWidget = Cast<UMG26_PostProcessWidgetBase>(PostProcessWidgetInstance))
+				if (UMG26_PostProcessWidgetBase* PostProcessWidget = Cast<UMG26_PostProcessWidgetBase>(ConTroWidget))
 				{
 					if (UPPM_DoiMauPostProcessComponent* PPMComponent = FindComponentByClass<UPPM_DoiMauPostProcessComponent>())
 					{
@@ -68,7 +66,7 @@ void AMG26_Pawn_03_SideScroller::PossessedBy(AController* NewController)
 		}
 	}
 }
-
+// Hàm này được gọi khi Pawn không còn được điều khiển nữa. Nó sẽ dọn dẹp Widget UI và khôi phục trạng thái input về mặc định (chỉ cho game, ẩn con trỏ chuột).
 void AMG26_Pawn_03_SideScroller::UnPossessed()
 {
 	// Lấy PlayerController TRƯỚC khi gọi hàm cha, vì nó sẽ bị xóa sau đó
@@ -77,20 +75,17 @@ void AMG26_Pawn_03_SideScroller::UnPossessed()
 	Super::UnPossessed();
 
 	// Dọn dẹp Widget
-	if (PostProcessWidgetInstance)
+	if (ConTroWidget)
 	{
-		PostProcessWidgetInstance->RemoveFromParent();
-		PostProcessWidgetInstance = nullptr;
+		ConTroWidget->RemoveFromParent();
+		ConTroWidget = nullptr;
 	}
 
-	// Khôi phục trạng thái input và chuột
+	// Khôi phục trạng thái input chỉ cho game và ẩn con trỏ chuột
 	if (PlayerController)
 	{
-		// Trả lại chế độ input chỉ cho game
 		FInputModeGameOnly InputModeData;
 		PlayerController->SetInputMode(InputModeData);
-
-		// Ẩn con trỏ chuột và tắt sự kiện click/mouse over
 		PlayerController->bShowMouseCursor = false;
 		PlayerController->bEnableClickEvents = false;
 		PlayerController->bEnableMouseOverEvents = false;

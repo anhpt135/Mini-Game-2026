@@ -1,62 +1,47 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-//1. Mục tiêu là tạo ra con trỏ địa chỉ tên là PostProcessComponentRef trỏ về Component PostProcess của Pawn/Character
-//2. Thông qua con trỏ tiếp cận Component và truyền giá trị từ UI qua Component
+
 #pragma once
 
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
 #include "MG26_PostProcessWidgetBase.generated.h"
 
-// Forward Declarations
+// Khai báo sớm các lớp.
 class UPPM_DoiMauPostProcessComponent;
 class UCheckBox;
 class USlider;
 
-/**
- * Lớp cha C++ cho Widget quản lý Post Process
- */
+// Widget UI điều khiển hiệu ứng Post Process.
 UCLASS()
 class MINIGAME_2026_API UMG26_PostProcessWidgetBase : public UUserWidget
 {
 	GENERATED_BODY()
 
 public:
-	/**
-	 * @brief Thiết lập con trỏ tới component backend và đấu dây các sự kiện UI.
-	 * @param InComponent Con trỏ tới Post Process Component trên Pawn.
-	 */
+	// Thiết lập Post Process Component và đăng ký sự kiện UI.
 	void SetPostProcessComponent(UPPM_DoiMauPostProcessComponent* InComponent);
 
 protected:
-	// ~~~ Vòng đời Widget ~~~
-	virtual void NativeConstruct() override;
-
-	// ~~~ Con trỏ Backend ~~~
+	// Con trỏ tới Post Process Component.
 	UPROPERTY(BlueprintReadOnly, Transient, Category = "Post Process")
 	TObjectPtr<UPPM_DoiMauPostProcessComponent> PostProcessComponentRef;
 
-	// ==========================================
-	// BINDING WIDGETS TỪ BLUEPRINT
-	// Tên biến phải CHÍNH XÁC với tên Widget trong Designer
-	// ==========================================
+	// Binding Widgets từ Blueprint (tên biến khớp với Designer).
 	UPROPERTY(meta = (BindWidget))
-	TObjectPtr<UCheckBox> Check_ToggleEffect;
+	TObjectPtr<UCheckBox> Check_ToggleEffect; // CheckBox bật/tắt hiệu ứng.
 
 	UPROPERTY(meta = (BindWidget))
-	TObjectPtr<USlider> Slider_R;
+	TObjectPtr<USlider> Slider_R; // Slider điều chỉnh màu Đỏ.
 
 	UPROPERTY(meta = (BindWidget))
-	TObjectPtr<USlider> Slider_G;
+	TObjectPtr<USlider> Slider_G; // Slider điều chỉnh màu Xanh Lá.
 
 	UPROPERTY(meta = (BindWidget))
-	TObjectPtr<USlider> Slider_B;
+	TObjectPtr<USlider> Slider_B; // Slider điều chỉnh màu Xanh Dương.
 
-	// ==========================================
-	// CÁC HÀM XỬ LÝ SỰ KIỆN (DELEGATES)
-	// ==========================================
+	// Các hàm callback xử lý sự kiện.
 	UFUNCTION()
-	void HandleToggleEffectChanged(bool bIsChecked);
+	void CallbackToggleEffectChanged(bool bIsChecked); // Xử lý thay đổi trạng thái CheckBox bật/tắt hiệu ứng.
 
 	UFUNCTION()
-	void HandleColorSliderChanged(float InValue);
+	void CallbackColorSliderChanged(float InValue); // Xử lý khi giá trị Slider màu thay đổi.
 };
